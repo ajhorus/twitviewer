@@ -23,8 +23,8 @@ exports.dashboard_Post = function(req, res){
    if(ticker)
    {
       var urlAddr = 'http://www.google.com/ig/api?stock='+ticker;
-	  //urAddr = 'http://smallbusiness.aol.com/category/five-things-you-need-to-know/rss.xml';
-		    urlReq(urAddr, function(body, dataXml){
+	  //urlAddr = 'http://smallbusiness.aol.com/category/five-things-you-need-to-know/rss.xml';
+		    urlReq(urlAddr, function(body, dataXml){
 			console.log(req.session.oauth.access_token);
 			console.log(req.session.oauth.access_token_secret);
 			console.log('data length: ' + body.length);
@@ -32,7 +32,7 @@ exports.dashboard_Post = function(req, res){
 			var parser = new xml2js.Parser();
 			parser.parseString(body, function (err, result) {
 
-			if(error)
+			if(err)
 			{
 				res.send("Error parsing data from google API");
 			}

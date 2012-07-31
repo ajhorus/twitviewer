@@ -45,6 +45,17 @@ app.get('/dashboard', function(req, res){
     res.render('dashboard',  {title: "testing dashboard"});
 });
 
+app.post('/dashboard', function(req,res){
+  routes.urlReq('http://www.engadget.com/editor/edgar-alvarez/rss.xml', function(body, resInt){
+
+	console.log(req.session.oauth.access_token);
+	console.log(req.session.oauth.access_token_secret);
+    console.log(resInt);
+    res.send("finito for now");
+});
+
+});
+
 //**************************** twiter oauth   ********************************
 
 var OAuth= require('oauth').OAuth;

@@ -3,8 +3,8 @@ head
   script(type="text/javascript", src="/javascripts/client.js")
 h1 Dashboard 
 h3 - #{title}
-form(method="post")
+form(method="post",action="/dashboard")
   div#enterTicker
     |Ticker:
     input(type='text',id='txtTicker')
-    input(type='button', id='btnTicker',value='go')
+    input(type='submit', id='btnTicker',value='go')

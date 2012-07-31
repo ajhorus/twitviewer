@@ -17,10 +17,13 @@ app.configure(function(){
   app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
-  app.use(express.cookieParser());
-  app.use(express.static(path.join(__dirname, 'public')));
-  app.use(express.session({ secret: 'keyboard cat', key: 'sid'}));
   app.use(express.methodOverride());
+  app.use(express.cookieParser());
+  app.use(express.session({ secret: 'keyboard cat', key: 'sid'}));
+  //app.use(require('express/node_modules/connect').bodyParser());
+  
+  
+  app.use(express.static(path.join(__dirname, 'public')));
   app.use(app.router);
   
 });
@@ -46,8 +49,9 @@ app.get('/dashboard', function(req, res){
 });
 
 app.post('/dashboard', function(req,res){
-   var ticker = req.body['txtTicker']; 
-   
+   var ticker = req.body.ticker; 
+     
+ 
    if(ticker)
    {
 	  routes.urlReq('http://www.google.com/ig/api?stock='+ticker, function(body, dataXml){
@@ -65,14 +69,12 @@ app.post('/dashboard', function(req,res){
 		
 		res.send("finito for now");
 	});
-
    }
    else
    {
       res.send('parameter missing');
 	  console.log('Parameter not present');
    }
-
 });
 
 //**************************** twiter oauth   ********************************

@@ -1,5 +1,10 @@
-h1 Dashboard #{title}
-div#enterTicker
-  |Ticker:
-  input(type='text',id='txtTicker')
-  input(type='button', id='btnTicker',value='go')
+head
+  script(type="text/javascript", src="http://code.jquery.com/jquery-1.6.4.js")
+  script(type="text/javascript", src="/javascripts/client.js")
+h1 Dashboard 
+h3 - #{title}
+form(method="post")
+  div#enterTicker
+    |Ticker:
+    input(type='text',id='txtTicker')
+    input(type='button', id='btnTicker',value='go')

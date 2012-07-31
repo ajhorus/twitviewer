@@ -54,17 +54,20 @@ app.post('/dashboard', function(req,res){
  
    if(ticker)
    {
-	  routes.urlReq('http://www.google.com/ig/api?stock='+ticker, function(body, dataXml){
-
+      var urlAddr = 'http://www.google.com/ig/api?stock='+ticker;
+	  urAddr = 'http://smallbusiness.aol.com/category/five-things-you-need-to-know/rss.xml';
+	  routes.urlReq(urAddr, function(body, dataXml){
 		console.log(req.session.oauth.access_token);
 		console.log(req.session.oauth.access_token_secret);
-		console.log('data length: ' + dataXml.length);
+		console.log('data length: ' + body.length);
 		var parser = new xml2js.Parser();
-		parser.parseString(dataXml, function (err, result) {
+		parser.parseString(body, function (err, result) {
 			//console.dir(result);
 			console.log('Error: ' + err);
-			res.send(result);
-			console.log(result + 'Done');
+			//res.send(result);
+			var jsonStr = JSON.stringify(result);
+			console.log(jsonStr + ' Done');
+			res.send('after parsing:    ' +jsonStr);
 		});
 		
 		res.send("finito for now");

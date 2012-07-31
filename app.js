@@ -83,7 +83,7 @@ app.get('/auth/twitter/callback', function(req, res, next){
 		function(error, oauth_access_token, oauth_access_token_secret, results){
 			if (error){
 				console.log(error);
-				res.send("yeah something broke.");
+				res.send("Error user credentials in Twitter");
 			} else {
 			    var user_data = results;
 				console.log(user_data.screen_name);

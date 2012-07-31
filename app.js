@@ -91,7 +91,6 @@ app.get('/auth/twitter/callback', function(req, res, next){
 				req.session.oauth.access_token_secret = oauth_access_token_secret;
 				req.session.oauth.scren_name = user_data.screen_name;
 				res.render('dashboard.jade', {title: user_data.screen_name});
-				
 			}
 		}
 		);

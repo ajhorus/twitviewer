@@ -12,7 +12,10 @@ exports.index = function(req, res){
 };
 
 exports.dashboard_Get = function(req, res){
-  res.render('index', { title: 'Dashboard twitter test' });
+  var titleText ="";
+  if(req.session.oauth)
+     titleText = req.session.oauth.screen_name;
+  res.render('index', { title: titleText });
 };
 
 exports.dashboard_Post = function(req, res){
@@ -20,22 +23,26 @@ exports.dashboard_Post = function(req, res){
    if(ticker)
    {
       var urlAddr = 'http://www.google.com/ig/api?stock='+ticker;
-	  urAddr = 'http://smallbusiness.aol.com/category/five-things-you-need-to-know/rss.xml';
-	  urlReq(urAddr, function(body, dataXml){
-		console.log(req.session.oauth.access_token);
-		console.log(req.session.oauth.access_token_secret);
-		console.log('data length: ' + body.length);
-		var parser = new xml2js.Parser();
-		parser.parseString(body, function (err, result) {
-			//console.dir(result);
-			console.log('Error: ' + err);
-			//res.send(result);
-			var jsonStr = JSON.stringify(result);
-			console.log(jsonStr + ' Done');
-			res.send('after parsing:    ' +jsonStr);
+	  //urAddr = 'http://smallbusiness.aol.com/category/five-things-you-need-to-know/rss.xml';
+		    urlReq(urAddr, function(body, dataXml){
+			console.log(req.session.oauth.access_token);
+			console.log(req.session.oauth.access_token_secret);
+			console.log('data length: ' + body.length);
+			res.send("Invalid request to Google API");
+			var parser = new xml2js.Parser();
+			parser.parseString(body, function (err, result) {
+
+			if(error)
+			{
+				res.send("Error parsing data from google API");
+			}
+			else
+			{
+				var jsonStr = JSON.stringify(result);
+				//console.log(jsonStr + ' Done');
+				res.send('after parsing:    ' +jsonStr);
+			}
 		});
-		
-		//res.send("finito for now");
 	});
    }
    else

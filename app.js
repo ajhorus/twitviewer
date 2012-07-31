@@ -6,8 +6,8 @@
 var express = require('express')
   , routes = require('./routes')
   , http = require('http')
-  , path = require('path')
-  , xml2js = require('xml2js');
+  , path = require('path');
+  
 var app = express();
 
 app.configure(function(){
@@ -32,53 +32,14 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+
 app.get('/', routes.index);
 
-app.post('/', function(req,res) {
-req.session.rosas = "red rojas";
-console.log("session id req: " + req.session.id);
-console.log(req.session.rosas + "; 1 ses");
-res.redirect('/dashboard');
-res.send("hoo hee ha ha unimportant junk data");
-});
 
-app.get('/dashboard', function(req, res){
-    //console.log("session id: " + req.session.id);
-    //console.log("session in return " +  req.session.rosas);
-    res.render('dashboard',  {title: "testing dashboard"});
-});
+app.get('/dashboard',  routes.dashboard_Get);
+app.post('/dashboard', routes.dashboard_Post);
 
-app.post('/dashboard', function(req,res){
-   var ticker = req.body.ticker; 
-     
- 
-   if(ticker)
-   {
-      var urlAddr = 'http://www.google.com/ig/api?stock='+ticker;
-	  urAddr = 'http://smallbusiness.aol.com/category/five-things-you-need-to-know/rss.xml';
-	  routes.urlReq(urAddr, function(body, dataXml){
-		console.log(req.session.oauth.access_token);
-		console.log(req.session.oauth.access_token_secret);
-		console.log('data length: ' + body.length);
-		var parser = new xml2js.Parser();
-		parser.parseString(body, function (err, result) {
-			//console.dir(result);
-			console.log('Error: ' + err);
-			//res.send(result);
-			var jsonStr = JSON.stringify(result);
-			console.log(jsonStr + ' Done');
-			res.send('after parsing:    ' +jsonStr);
-		});
-		
-		res.send("finito for now");
-	});
-   }
-   else
-   {
-      res.send('parameter missing');
-	  console.log('Parameter not present');
-   }
-});
+
 
 //**************************** twiter oauth   ********************************
 
@@ -124,11 +85,11 @@ app.get('/auth/twitter/callback', function(req, res, next){
 				console.log(error);
 				res.send("yeah something broke.");
 			} else {
+			    var user_data = results;
+				console.log(user_data.screen_name);
 				req.session.oauth.access_token = oauth_access_token;
 				req.session.oauth.access_token_secret = oauth_access_token_secret;
-				console.log(results);
-				var user_data = results;
-				console.log(user_data.screen_name);
+				req.session.oauth.scren_name = user_data.screen_name;
 				res.render('dashboard.jade', {title: user_data.screen_name});
 				
 			}
@@ -140,53 +101,7 @@ app.get('/auth/twitter/callback', function(req, res, next){
 //******************************************************************************
 
 
-exports.urlReq = function(reqUrl, options, cb){
-    if(typeof options === "function"){ cb = options; options = {}; }// incase no options passed in
 
-    // parse url to chunks
-    reqUrl = url.parse(reqUrl);
-
-    // http.request settings
-    var settings = {
-        host: reqUrl.hostname,
-        port: reqUrl.port || 80,
-        path: reqUrl.pathname,
-        headers: options.headers || {},
-        method: options.method || 'GET'
-    };
-
-    // if there are params:
-    if(options.params){
-        options.params = JSON.stringify(options.params);
-        settings.headers['Content-Type'] = 'application/json';
-        settings.headers['Content-Length'] = options.params.length;
-    };
-
-    // MAKE THE REQUEST
-    var req = http.request(settings);
-
-    // if there are params: write them to the request
-    if(options.params){ req.write(options.params) };
-
-    // when the response comes back
-    req.on('response', function(res){
-        res.body = '';
-        res.setEncoding('utf-8');
-
-        // concat chunks
-        res.on('data', function(chunk){ res.body += chunk });
-
-        // when the response has finished
-        res.on('end', function(){
-            
-            // fire callback
-            cb(res.body, res);
-        });
-    });
-
-    // end the request
-    req.end();
-}
 
 
 http.createServer(app).listen(app.get('port'), function(){

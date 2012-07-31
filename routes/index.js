@@ -1,5 +1,6 @@
-var http = require('http'),
-    url = require('url');
+var http = require('http')
+    , url = require('url')
+	, xml2js = require('xml2js');
 
 
 /*
@@ -10,7 +11,41 @@ exports.index = function(req, res){
   res.render('index', { title: 'Dashboard twitter test' });
 };
 
-exports.urlReq = function(reqUrl, options, cb){
+exports.dashboard_Get = function(req, res){
+  res.render('index', { title: 'Dashboard twitter test' });
+};
+
+exports.dashboard_Post = function(req, res){
+  var ticker = req.body.ticker;   
+   if(ticker)
+   {
+      var urlAddr = 'http://www.google.com/ig/api?stock='+ticker;
+	  urAddr = 'http://smallbusiness.aol.com/category/five-things-you-need-to-know/rss.xml';
+	  urlReq(urAddr, function(body, dataXml){
+		console.log(req.session.oauth.access_token);
+		console.log(req.session.oauth.access_token_secret);
+		console.log('data length: ' + body.length);
+		var parser = new xml2js.Parser();
+		parser.parseString(body, function (err, result) {
+			//console.dir(result);
+			console.log('Error: ' + err);
+			//res.send(result);
+			var jsonStr = JSON.stringify(result);
+			console.log(jsonStr + ' Done');
+			res.send('after parsing:    ' +jsonStr);
+		});
+		
+		//res.send("finito for now");
+	});
+   }
+   else
+   {
+      res.send('parameter missing');
+	  console.log('Parameter not present');
+   }
+};
+
+var urlReq = function(reqUrl, options, cb){
     if(typeof options === "function"){ cb = options; options = {}; }// incase no options passed in
 
     // parse url to chunks

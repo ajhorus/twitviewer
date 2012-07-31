@@ -9,5 +9,8 @@ body
       |Ticker:
       input(type='text',name='ticker', id='tickertxt')
       input(type='submit', name='btnTicker',value='go')
-
       h4 #{ErrorMsg}
+    for tweet in TwitCollection
+      #tweetInfo
+        h5 = tweet.from_user
+        span = tweet.text

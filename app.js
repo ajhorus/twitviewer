@@ -90,7 +90,8 @@ app.get('/auth/twitter/callback', function(req, res, next){
 				req.session.oauth.access_token = oauth_access_token;
 				req.session.oauth.access_token_secret = oauth_access_token_secret;
 				req.session.oauth.screen_name = user_data.screen_name;
-				res.render('dashboard.jade', {title: user_data.screen_name, ErrorMsg:""});
+				var emptyArray = [ ];
+				res.render('dashboard.jade', {title: user_data.screen_name, ErrorMsg:"", TwitCollection: emptyArray});
 			}
 		}
 		);

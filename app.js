@@ -6,8 +6,8 @@
 var express = require('express')
   , routes = require('./routes')
   , http = require('http')
-  , path = require('path');
-
+  , path = require('path')
+  , xml2js = require('xml2js');
 var app = express();
 
 app.configure(function(){
@@ -40,19 +40,38 @@ res.send("hoo hee ha ha unimportant junk data");
 });
 
 app.get('/dashboard', function(req, res){
-    console.log("session id: " + req.session.id);
-    console.log("session in return " +  req.session.rosas);
+    //console.log("session id: " + req.session.id);
+    //console.log("session in return " +  req.session.rosas);
     res.render('dashboard',  {title: "testing dashboard"});
 });
 
 app.post('/dashboard', function(req,res){
-  routes.urlReq('http://www.engadget.com/editor/edgar-alvarez/rss.xml', function(body, resInt){
+   var ticker = req.body['txtTicker']; 
+   
+   if(ticker)
+   {
+	  routes.urlReq('http://www.google.com/ig/api?stock='+ticker, function(body, dataXml){
 
-	console.log(req.session.oauth.access_token);
-	console.log(req.session.oauth.access_token_secret);
-    console.log(resInt);
-    res.send("finito for now");
-});
+		console.log(req.session.oauth.access_token);
+		console.log(req.session.oauth.access_token_secret);
+		console.log('data length: ' + dataXml.length);
+		var parser = new xml2js.Parser();
+		parser.parseString(dataXml, function (err, result) {
+			//console.dir(result);
+			console.log('Error: ' + err);
+			res.send(result);
+			console.log(result + 'Done');
+		});
+		
+		res.send("finito for now");
+	});
+
+   }
+   else
+   {
+      res.send('parameter missing');
+	  console.log('Parameter not present');
+   }
 
 });
 
@@ -101,7 +120,7 @@ app.get('/auth/twitter/callback', function(req, res, next){
 				res.send("yeah something broke.");
 			} else {
 				req.session.oauth.access_token = oauth_access_token;
-				req.session.oauth,access_token_secret = oauth_access_token_secret;
+				req.session.oauth.access_token_secret = oauth_access_token_secret;
 				console.log(results);
 				var user_data = results;
 				console.log(user_data.screen_name);

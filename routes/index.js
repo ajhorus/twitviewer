@@ -23,24 +23,41 @@ exports.dashboard_Post = function(req, res){
    if(ticker)
    {
       var urlAddr = 'http://www.google.com/ig/api?stock='+ticker;
-	  //urlAddr = 'http://smallbusiness.aol.com/category/five-things-you-need-to-know/rss.xml';
+	  urlAddr = 'http://127.0.0.1:3000/unkwonsymbol.xml';
 		    urlReq(urlAddr, function(body, dataXml){
 			console.log(req.session.oauth.access_token);
 			console.log(req.session.oauth.access_token_secret);
+			console.log(req.session.oauth.screen_name);
 			console.log('data length: ' + body.length);
-			res.send("Invalid request to Google API");
-			var parser = new xml2js.Parser();
+			//res.send("Invalid request to Google API");
+			var jsonStrBody = JSON.stringify(body);
+			//console.log(jsonStrBody);
+			var parser = new xml2js.Parser({explicitRoot : false, explicitCharkey :true, mergeAttrs :true, explicitArray :false});
 			parser.parseString(body, function (err, result) {
 
 			if(err)
 			{
-				res.send("Error parsing data from google API");
+				console.log("Error parsing data from Google Api. " + err);
+				res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: err});
+				//res.send("Error parsing data from google API " + err);
 			}
 			else
 			{
-				var jsonStr = JSON.stringify(result);
-				//console.log(jsonStr + ' Done');
-				res.send('after parsing:    ' +jsonStr);
+			    var jsonStr = JSON.stringify(result);
+			    var exchange = result.finance.exchange.data;
+				console.log('exchange is: ' + exchange);
+				if(exchange == "UNKNOWN EXCHANGE")
+				{
+				    res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: 'Todo Cool Exchange'});
+					//res.send({title:req.session.oauth.screen_name, ErrorMsg: exchange});
+				}
+				else
+				{
+					res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: 'Todo Cool'});
+					//request twits
+				}
+				
+				//res.send('after parsing:    ' +jsonStr);
 			}
 		});
 	});

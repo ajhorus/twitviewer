@@ -48,12 +48,14 @@ exports.dashboard_Post = function(req, res){
 				console.log('exchange is: ' + exchange);
 				if(exchange == "UNKNOWN EXCHANGE")
 				{
-				    res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: 'Todo Cool Exchange'});
-					//res.send({title:req.session.oauth.screen_name, ErrorMsg: exchange});
+					console.log("bad symbol " + exchange);
+				    res.render('dashboard.jade',{ ErrorMsg: exchange, title:req.session.oauth.screen_name });
+					
 				}
 				else
 				{
-					res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: 'Todo Cool'});
+					console.log("good symbol " + exchange);
+					res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: 'Todo Cool' + exchange});
 					//request twits
 				}
 				

@@ -19,28 +19,33 @@ exports.dashboard_Get = function(req, res){
   res.render('index', { title: titleText });
 };
 
-exports.dashboard_Post = function(req, res){
-  var ticker = req.body.ticker;   
+
+
+exports.dashboard_matchticker = function (req,res) {
+   console.log(req.params.value);
+   var ticker = req.params.value;
    if(ticker)
    {
       var urlAddr = 'http://www.google.com/ig/api?stock='+ticker; //live
 	  urlAddr = 'http://127.0.0.1:3000/unkwonsymbol.xml';//unkwon 
 	  urlAddr = 'http://127.0.0.1:3000/goodsymbol.xml';//good symbol
-		    urlReq(urlAddr, function(body, dataXml){
-			console.log(req.session.oauth.access_token);
-			console.log(req.session.oauth.access_token_secret);
-			console.log(req.session.oauth.screen_name);
-			console.log('data length: ' + body.length);
-
+	  
+		urlReq(urlAddr, function(body, dataXml){
+		console.log(req.session.oauth.access_token);
+		console.log(req.session.oauth.access_token_secret);
+		console.log(req.session.oauth.screen_name);
+		console.log('data length: ' + body.length);
+            var dataToReturn = {};
 			var parser = new xml2js.Parser({explicitRoot : false, explicitCharkey :true, mergeAttrs :true, explicitArray :false});
 			parser.parseString(body, function (err, result) {
 
 			if(err)
 			{
 				console.log("Error parsing data from Google Api. " + err);
-				var emptyArray = [ ];
-				res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: err, TwitCollection: emptyArray});
-				
+				dataToReturn.error = "Error parsing data from Google Api. " + err;
+				res.writeHead(200, {'content-type': 'text/json' });
+				res.write( JSON.stringify(dataToReturn) );
+				res.end('\n');
 			}
 			else
 			{
@@ -49,8 +54,10 @@ exports.dashboard_Post = function(req, res){
 				if(exchange == "UNKNOWN EXCHANGE")
 				{
 					console.log("bad symbol " + exchange);
-					var emptyArray = [ ];
-				    res.render('dashboard.jade',{ ErrorMsg: exchange, title:req.session.oauth.screen_name, TwitCollection: emptyArray });
+					dataToReturn.error = "Invalid symbol";
+					res.writeHead(200, {'content-type': 'text/json' });
+					res.write( JSON.stringify(dataToReturn) );
+					res.end('\n');
 				}
 				else
 				{
@@ -63,22 +70,83 @@ exports.dashboard_Post = function(req, res){
 									  , access_token_secret:  req.session.oauth.access_token_secret
 									});
 					T.get('search', { q: ticker, since: '2011-11-11' }, function(err, reply) {
-					
 						var replyJson = JSON.stringify(reply.results);
-						console.log('reply twitter: ' +replyJson);
-
-						//console.log('reply twitter: ' + reply.results.length);
-						res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: 'Todo Cool' + exchange, TwitCollection: reply.results});
-					
+						console.log('reply twitter: ' +reply.results.length);
+						dataToReturn.error = "";
+						dataToReturn.tweets = reply.results;
+						res.writeHead(200, {'content-type': 'text/json' });
+						res.write( JSON.stringify(dataToReturn) );
+						res.end('\n');
 					});
-					
-					
 				}
-				
-				//res.send('after parsing:    ' +jsonStr);
 			}
 		});
 	});
+   }
+   
+};
+
+
+exports.dashboard_Post = function(req, res){
+  var ticker = req.body.ticker;   
+   if(ticker)
+   {
+      var urlAddr = 'http://www.google.com/ig/api?stock='+ticker; //live
+	  urlAddr = 'http://127.0.0.1:3000/unkwonsymbol.xml';//unkwon 
+	  urlAddr = 'http://127.0.0.1:3000/goodsymbol.xml';//good symbol
+	  
+		urlReq(urlAddr, function(body, dataXml){
+		console.log(req.session.oauth.access_token);
+		console.log(req.session.oauth.access_token_secret);
+		console.log(req.session.oauth.screen_name);
+		console.log('data length: ' + body.length);
+
+				var parser = new xml2js.Parser({explicitRoot : false, explicitCharkey :true, mergeAttrs :true, explicitArray :false});
+				parser.parseString(body, function (err, result) {
+
+				if(err)
+				{
+					console.log("Error parsing data from Google Api. " + err);
+					var emptyArray = [ ];
+					 
+					res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: err, TwitCollection: emptyArray});
+				}
+				else
+				{
+					var exchange = result.finance.exchange.data;
+					console.log('exchange is: ' + exchange);
+					if(exchange == "UNKNOWN EXCHANGE")
+					{
+						console.log("bad symbol " + exchange);
+						var emptyArray = [ ];
+						
+						res.render('dashboard.jade',{ ErrorMsg: exchange, title:req.session.oauth.screen_name, TwitCollection: emptyArray });
+					}
+					else
+					{
+						console.log("good symbol " + exchange);
+						
+						var T = new Twit({
+											consumer_key:         'U9GKXZfJMRru0ibAXMwog'
+										  , consumer_secret:      'bMuit8gE9fgTp58Hi4dXHQw1kucZQPDx00JJWPRCU'
+										  , access_token:         req.session.oauth.access_token
+										  , access_token_secret:  req.session.oauth.access_token_secret
+										});
+						T.get('search', { q: ticker, since: '2011-11-11' }, function(err, reply) {
+						
+							var replyJson = JSON.stringify(reply.results);
+							console.log('reply twitter: ' +replyJson);
+							dataToReturn.error = "";
+							dataToReturn.tweets = reply.results;
+
+							//console.log('reply twitter: ' + reply.results.length);
+							res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: 'Todo Cool' + exchange, TwitCollection: reply.results});
+						
+						});
+					}
+				}
+			});
+		});
    }
    else
    {

@@ -34,10 +34,9 @@ app.configure('development', function(){
 
 
 app.get('/', routes.index);
-
-
 app.get('/dashboard',  routes.dashboard_Get);
 app.post('/dashboard', routes.dashboard_Post);
+app.get('/dashboard_matchticker/:value', routes.dashboard_matchticker);
 
 
 

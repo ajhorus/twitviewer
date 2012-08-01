@@ -1,6 +1,7 @@
 head
   script(type="text/javascript", src="http://code.jquery.com/jquery-1.6.4.js")
   script(type="text/javascript", src="/javascripts/client.js")
+  link(rel='stylesheet', href='/stylesheets/style.css')
 body
   h1 Dashboard 
   h3 - #{title}
@@ -8,9 +9,7 @@ body
     div#enterTicker
       |Ticker:
       input(type='text',name='ticker', id='tickertxt')
-      input(type='submit', name='btnTicker',value='go')
-      h4 #{ErrorMsg}
-    for tweet in TwitCollection
-      #tweetInfo
-        h5 = tweet.from_user
-        span = tweet.text
+      input(type='button',id='btnTicker', name='btnTicker',value='go')
+      div#errorDiv
+    div#tweetsHeader.jstwitter
+      ul#tweetsList

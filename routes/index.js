@@ -70,10 +70,17 @@ exports.dashboard_matchticker = function (req,res) {
 									  , access_token_secret:  req.session.oauth.access_token_secret
 									});
 					T.get('search', { q: ticker, since: '2011-11-11' }, function(err, reply) {
-						var replyJson = JSON.stringify(reply.results);
-						console.log('reply twitter: ' +reply.results.length);
-						dataToReturn.error = "";
-						dataToReturn.tweets = reply.results;
+					
+						if(err){
+						   dataToReturn.error = err;
+						}
+						else
+						{
+							var replyJson = JSON.stringify(reply.results);
+							console.log('reply twitter: ' +reply.results.length);
+							dataToReturn.error = "";
+							dataToReturn.tweets = reply.results;
+						}
 						res.writeHead(200, {'content-type': 'text/json' });
 						res.write( JSON.stringify(dataToReturn) );
 						res.end('\n');
@@ -134,13 +141,13 @@ exports.dashboard_Post = function(req, res){
 										});
 						T.get('search', { q: ticker, since: '2011-11-11' }, function(err, reply) {
 						
+						console.log('Error:' + err);
+						if(err==null || err ==""){
 							var replyJson = JSON.stringify(reply.results);
 							console.log('reply twitter: ' +replyJson);
-							dataToReturn.error = "";
-							dataToReturn.tweets = reply.results;
-
 							//console.log('reply twitter: ' + reply.results.length);
 							res.render('dashboard.jade',{title:req.session.oauth.screen_name, ErrorMsg: 'Todo Cool' + exchange, TwitCollection: reply.results});
+							}
 						
 						});
 					}

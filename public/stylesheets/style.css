@@ -19,3 +19,23 @@ a {
     padding: 0 0 15px 0;
     border-bottom: 1px dotted #ccc;
 }
+
+#tweetsList .tweet a {
+    text-decoration: none;
+    color: #13c9d0;
+}
+
+.tweetname
+{
+	color:black;
+}
+ 
+#tweetsList .tweet a:hover {
+    text-decoration: underline;
+}
+ 
+#tweetsList .tweet .time {
+    font-size: 10px;
+    font-style: italic;
+    color: #666666;
+}

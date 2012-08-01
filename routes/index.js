@@ -10,7 +10,7 @@ io.sockets.on('connection', function (socket) {
   console.log('connection started');
   socket.on('startStreaming', function (data) {
     console.log('stratStreamReceive');
-	console.log(JSON.stringify(data));
+	//console.log(JSON.stringify(data));
     if(data.symbol)
 	{
 		var access_token = data.access_token;
@@ -25,13 +25,16 @@ io.sockets.on('connection', function (socket) {
 		var stream = T.stream('statuses/filter', { track: data.symbol })
 
 		stream.on('tweet', function (tweet) {
-		  console.log('tweet update ' );
-		  console.log(tweet);
-		  socket.emit('tweet',tweet);
+		  //console.log('tweet update ' );
+		  //console.log(tweet);
+		  //if(tweet.geo != null)
+		  //{
+			 socket.emit('tweet',tweet);
+		  //}
 		});
 		
 	}
-	console.log(data);
+	//console.log(data);
   });
 });
 

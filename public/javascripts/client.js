@@ -19,6 +19,13 @@ function CreateTweetTemplate(tweet){
  return item;
 }
 
+function CreateTweetTemplateFromStream(tweet){
+//var scrtext = 'src';
+ var item = "<li><div class='tweet'><img src='" +tweet.user.profile_image_url +"'><b><a style='color:black' href='https://twitter.com/"+tweet.user.screen_name+"'>" 
+ + tweet.user.name +"</a></b>&nbsp;&nbsp;"+ ify.clean(tweet.text)+ "<br/>" + tweet.created_at+"</div></li>";
+ return item;
+}
+
  var ify  = {
       link: function(tweet) {
         return tweet.replace(/\b(((https*\:\/\/)|www\.)[^\"\']+?)(([!?,.\)]+)?(\s|$))/g, function(link, m1, m2, m3, m4) {
@@ -50,12 +57,17 @@ function CreateTweetTemplate(tweet){
       }
     } // ify
 
+var socket = io.connect('http://127.0.0.1:81');
+	
 function ConnectIO(symbol,access_token,access_token_secret)
 {
-	var socket = io.connect('http://127.0.0.1:81');
+	
 	socket.on('tweet', function (data) {
-		console.log('got tweet');
-		console.log(JSON.stringify(data));
+		var maxAllowed = $("#tweetsList li").size();
+		$("#tweetsList").prepend( CreateTweetTemplateFromStream(data));
+		
+		$( 'li:gt(' + ( maxAllowed-1 ) + ')' ).remove();
+		//console.log(JSON.stringify(data));
 	});
     socket.emit('startStreaming', { symbol: symbol, access_token : access_token, access_token_secret : access_token_secret });
 }	
@@ -79,7 +91,7 @@ function CheckSymbol(symbol){
 		 {
 		    var tweets = jObject.tweets;
 			var count = tweets.length;
-			//console.log(JSON.stringify(tweets));
+			
 			$("#tweetsList").html('');
 			for (var i = 0; i < tweets.length; i++) { 
 			   $("#tweetsList").append( CreateTweetTemplate(tweets[i]));

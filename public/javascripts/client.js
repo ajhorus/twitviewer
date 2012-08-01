@@ -58,17 +58,21 @@ function CreateTweetTemplateFromStream(tweet){
     } // ify
 
 var socket = io.connect('http://127.0.0.1:81');
+socket.on('tweet', function (data) {
+		var maxAllowed = $("#tweetsList li").size();
+		var symbol = $("#tickertxt").val();
+		if(data.symbol == symbol)
+		{
+			$("#tweetsList").prepend( CreateTweetTemplateFromStream(data.tweet));
+			$( 'li:gt(' + ( maxAllowed-1 ) + ')' ).remove();
+		}
+		
+	});
 	
 function ConnectIO(symbol,access_token,access_token_secret)
 {
 	
-	socket.on('tweet', function (data) {
-		var maxAllowed = $("#tweetsList li").size();
-		$("#tweetsList").prepend( CreateTweetTemplateFromStream(data));
-		
-		$( 'li:gt(' + ( maxAllowed-1 ) + ')' ).remove();
-		//console.log(JSON.stringify(data));
-	});
+	
     socket.emit('startStreaming', { symbol: symbol, access_token : access_token, access_token_secret : access_token_secret });
 }	
 	
@@ -91,7 +95,7 @@ function CheckSymbol(symbol){
 		 {
 		    var tweets = jObject.tweets;
 			var count = tweets.length;
-			
+			$("#errorDiv").html('');
 			$("#tweetsList").html('');
 			for (var i = 0; i < tweets.length; i++) { 
 			   $("#tweetsList").append( CreateTweetTemplate(tweets[i]));
@@ -101,6 +105,7 @@ function CheckSymbol(symbol){
 		 else
 		 {
 		   $("#errorDiv").html(error);
+		   $("#tweetsList").html('');
 		 }
 	     
 	   } // end success

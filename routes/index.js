@@ -1,9 +1,43 @@
 var http = require('http')
     , url = require('url')
 	, xml2js = require('xml2js')
-	, Twit = require('twit');
+	, Twit = require('twit')
+	, io = require('socket.io').listen(81);
 
 
+io.sockets.on('connection', function (socket) {
+  //socket.emit('news', { hello: 'world' });
+  console.log('connection started');
+  socket.on('startStreaming', function (data) {
+    console.log('stratStreamReceive');
+	console.log(JSON.stringify(data));
+    if(data.symbol)
+	{
+		var access_token = data.access_token;
+		var access_token_secret = data.access_token_secret;
+		var T = new Twit({
+							consumer_key:         'U9GKXZfJMRru0ibAXMwog'
+						  , consumer_secret:      'bMuit8gE9fgTp58Hi4dXHQw1kucZQPDx00JJWPRCU'
+						  , access_token:         access_token
+						  , access_token_secret:  access_token_secret
+						});
+						
+		var stream = T.stream('statuses/filter', { track: data.symbol })
+
+		stream.on('tweet', function (tweet) {
+		  console.log('tweet update ' );
+		  console.log(tweet);
+		  socket.emit('tweet',tweet);
+		});
+		
+	}
+	console.log(data);
+  });
+});
+
+	
+	
+	
 /*
  * GET home page.
  */
@@ -79,6 +113,8 @@ exports.dashboard_matchticker = function (req,res) {
 							var replyJson = JSON.stringify(reply.results);
 							console.log('reply twitter: ' +reply.results.length);
 							dataToReturn.error = "";
+							dataToReturn.access_token = req.session.oauth.access_token;
+							dataToReturn.access_token_secret = req.session.oauth.access_token_secret;
 							dataToReturn.tweets = reply.results;
 						}
 						res.writeHead(200, {'content-type': 'text/json' });

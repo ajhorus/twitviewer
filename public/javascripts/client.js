@@ -50,6 +50,16 @@ function CreateTweetTemplate(tweet){
       }
     } // ify
 
+function ConnectIO(symbol,access_token,access_token_secret)
+{
+	var socket = io.connect('http://127.0.0.1:81');
+	socket.on('tweet', function (data) {
+		console.log('got tweet');
+		console.log(JSON.stringify(data));
+	});
+    socket.emit('startStreaming', { symbol: symbol, access_token : access_token, access_token_secret : access_token_secret });
+}	
+	
 function CheckSymbol(symbol){
 	$.ajax({
 	   type: "GET",
@@ -57,23 +67,24 @@ function CheckSymbol(symbol){
 	   url: '/dashboard_matchticker/'+symbol,
 	   dataType: "json",
 	   error: function (xhr, ajaxOptions, thrownError) {
-		   //En caso de error (incluye timeout error)
+		   
 		   alert(xhr.status);
 		   alert(thrownError);
 	   }, //end error
 	   success: function (jObject) {
-		 //console.log(jObject[error]);
+		 
 		 console.log(jObject.error);
 		 var error = jObject.error;
 		 if(error=="")
 		 {
 		    var tweets = jObject.tweets;
 			var count = tweets.length;
-			console.log(JSON.stringify(tweets));
+			//console.log(JSON.stringify(tweets));
 			$("#tweetsList").html('');
 			for (var i = 0; i < tweets.length; i++) { 
 			   $("#tweetsList").append( CreateTweetTemplate(tweets[i]));
 			}
+			ConnectIO(symbol,jObject.access_token,jObject.access_token_secret);
 		 }
 		 else
 		 {

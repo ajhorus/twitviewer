@@ -6,3 +6,16 @@ body {
 a {
   color: #00B7FF;
 }
+
+.jstwitter {
+    width: 300px;
+    font-family: georgia;
+    font-size: 15px;
+    color: #333333;
+    padding: 10px;
+}
+.tweet {
+    margin: 0 auto 15px auto;
+    padding: 0 0 15px 0;
+    border-bottom: 1px dotted #ccc;
+}

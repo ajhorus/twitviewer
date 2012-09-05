@@ -59,6 +59,7 @@ function CreateTweetTemplateFromStream(tweet){
 
 var socket = io.connect('http://127.0.0.1:81');
 socket.on('tweet', function (data) {
+		//alert('tweet');
 		var maxAllowed = $("#tweetsList li").size();
 		var symbol = $("#tickertxt").val();
 		if(data.symbol == symbol)
@@ -72,7 +73,7 @@ socket.on('tweet', function (data) {
 function ConnectIO(symbol,access_token,access_token_secret)
 {
 	
-	
+	//alert('start streamin');
     socket.emit('startStreaming', { symbol: symbol, access_token : access_token, access_token_secret : access_token_secret });
 }	
 	

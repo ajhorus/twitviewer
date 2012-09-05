@@ -163,7 +163,7 @@ exports.dashboard_Post = function(req, res){
 	  urlAddr = 'http://127.0.0.1:3000/unkwonsymbol.xml';//unkwon 
 	  urlAddr = 'http://127.0.0.1:3000/goodsymbol.xml';//good symbol
 	  
-		urlReq(urlAddr, function(body, dataXml){
+		request(urlAddr, function(body, dataXml){
 		console.log(req.session.oauth.access_token);
 		console.log(req.session.oauth.access_token_secret);
 		console.log(req.session.oauth.screen_name);
